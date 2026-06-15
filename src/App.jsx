@@ -38,7 +38,7 @@ input[type=number]{-moz-appearance:textfield;}
 .app{font-family:'Inter',sans-serif;min-height:100vh;background:var(--bg);color:var(--text);}
 
 /* ── NAV ── */
-.nav{display:flex;align-items:center;justify-content:space-between;padding:0 32px;height:64px;
+.nav{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:64px;
   border-bottom:1px solid var(--border);position:sticky;top:0;
   background:rgba(6,6,8,0.9);backdrop-filter:blur(16px);z-index:100;}
 .nav-logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-0.5px;
@@ -54,6 +54,30 @@ input[type=number]{-moz-appearance:textfield;}
 .nav-signout{background:transparent;border:1px solid var(--border);color:var(--muted);
   font-family:'Inter',sans-serif;font-size:12px;padding:6px 12px;border-radius:var(--rs);cursor:pointer;transition:all .15s;}
 .nav-signout:hover{border-color:var(--red);color:var(--red);}
+
+/* hamburger */
+.nav-hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;
+  background:transparent;border:none;cursor:pointer;padding:6px;border-radius:var(--rs);}
+.nav-hamburger span{display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:all .2s;}
+
+/* mobile dropdown */
+.nav-mobile-menu{display:none;position:absolute;top:64px;left:0;right:0;
+  background:rgba(13,13,18,0.98);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);z-index:99;padding:12px 16px 16px;flex-direction:column;gap:6px;}
+.nav-mobile-menu.open{display:flex;}
+.nav-mobile-tab{background:transparent;border:none;color:var(--muted);font-family:'Inter',sans-serif;
+  font-size:14px;font-weight:500;padding:11px 14px;border-radius:var(--rs);cursor:pointer;
+  transition:all .15s;text-align:left;width:100%;}
+.nav-mobile-tab:hover{color:var(--text);background:var(--s3);}
+.nav-mobile-tab.active{color:var(--text);background:var(--s3);}
+.nav-mobile-divider{border:none;border-top:1px solid var(--border);margin:6px 0;}
+.nav-mobile-bottom{display:flex;align-items:center;justify-content:space-between;padding:8px 14px 0;}
+
+@media(max-width:640px){
+  .nav-tabs{display:none;}
+  .nav-hamburger{display:flex;}
+  .nav-signout{display:none;}
+}
 
 /* ── UNIT TOGGLE ── */
 .unit-toggle{display:flex;background:var(--s3);border-radius:var(--rs);padding:3px;gap:2px;}
@@ -701,6 +725,7 @@ export default function App() {
   const [showEdit,    setShowEdit]    = useState(false);
   const [toast,       setToast]       = useState("");
   const [activeTab,   setActiveTab]   = useState("dashboard");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [nutrSubTab,  setNutrSubTab]  = useState("search"); // "search" | "manual" | "log"
   const [unit,        setUnit]        = useState("kg");
   const [authLoading, setAuthLoading] = useState(false);
@@ -1004,17 +1029,21 @@ export default function App() {
       <div className="app">
 
         {/* ── NAV ── */}
-        <nav className="nav">
+        <nav className="nav" style={{position:"sticky",top:0}}>
           <div className="nav-logo">FormTrack</div>
+
+          {/* desktop tabs */}
           {user && profileData && (
             <div className="nav-tabs">
               {["dashboard","nutrition","progress","milestones"].map(t => (
-                <button key={t} className={`nav-tab${activeTab===t?" active":""}`} onClick={() => setActiveTab(t)}>
+                <button key={t} className={`nav-tab${activeTab===t?" active":""}`}
+                  onClick={() => setActiveTab(t)}>
                   {t.charAt(0).toUpperCase() + t.slice(1)}
                 </button>
               ))}
             </div>
           )}
+
           <div className="nav-right">
             <div className="unit-toggle">
               <button className={`unit-btn${unit==="kg"?" active":""}`} onClick={() => setUnit("kg")}>kg</button>
@@ -1024,9 +1053,35 @@ export default function App() {
               <>
                 <img src={user.photoURL} alt="" className="nav-avatar" onClick={openEdit} title="Edit profile" />
                 <button className="nav-signout" onClick={handleSignOut}>Sign out</button>
-              </>
+             </>
+            )}
+            {/* hamburger — mobile only */}
+            {user && profileData && (
+              <button className="nav-hamburger" onClick={() => setMobileMenuOpen(o => !o)} aria-label="Menu">
+                <span /><span /><span />
+              </button>
             )}
           </div>
+
+          {/* mobile dropdown */}
+          {user && profileData && (
+            <div className={`nav-mobile-menu${mobileMenuOpen?" open":""}`}>
+              {["dashboard","nutrition","progress","milestones"].map(t => (
+              <button key={t} className={`nav-mobile-tab${activeTab===t?" active":""}`}
+                onClick={() => { setActiveTab(t); setMobileMenuOpen(false); }}>
+                {t.charAt(0).toUpperCase() + t.slice(1)}
+              </button>
+            ))}
+              <hr className="nav-mobile-divider" />
+              <div className="nav-mobile-bottom">
+                <div style={{display:"flex",alignItems:"center",gap:10}}>
+                  <img src={user.photoURL} alt="" className="nav-avatar" onClick={() => { openEdit(); setMobileMenuOpen(false); }} />
+                  <span style={{fontSize:13,color:"var(--muted)"}}>Edit Profile</span>
+                </div>
+                <button className="nav-signout" onClick={handleSignOut}>Sign out</button>
+              </div>
+            </div>
+          )}
         </nav>
 
         {/* ── HERO ── */}
