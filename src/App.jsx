@@ -1324,14 +1324,14 @@ export default function App() {
               </div>
             </div>
 
-            {/* water (70%) + log weight (30%) */}
-            <div style={{display:"flex",gap:14,marginBottom:14,alignItems:"stretch"}}>
-              {/* water — 70% */}
-              <div style={{flex:"0 0 68%"}}>
+            {/* water + log weight — side by side on desktop, stacked on mobile */}
+            <div style={{display:"flex",gap:14,marginBottom:14,alignItems:"stretch",flexWrap:"wrap"}}>
+              {/* water */}
+              <div style={{flex:"0 0 68%",minWidth:"280px",width:"100%"}}>
                 {user && <WaterTracker uid={user.uid} cups={waterCups} setCups={setWaterCups} goal={profileData.waterGoal || 8} />}
               </div>
-              {/* log weight — 30% */}
-              <div style={{flex:"1 1 0%"}}>
+              {/* log weight */}
+              <div style={{flex:"1 1 200px",minWidth:"200px",width:"100%"}}>
                 <div className="card" style={{height:"100%",display:"flex",flexDirection:"column",justifyContent:"space-between"}}>
                   <div>
                     <div className="card-label"><span className="card-label-dot" style={{background:"var(--green)"}} />Log Weight</div>
