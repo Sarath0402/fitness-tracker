@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { signInWithPopup, signOut } from "firebase/auth";
+import { signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
 import {
   doc, getDoc, setDoc, collection,
   addDoc, getDocs, query, orderBy, deleteDoc
@@ -812,7 +812,42 @@ export default function App() {
     while (loggedDays.has(nd.toISOString().slice(0, 10))) { ns++; nd.setDate(nd.getDate() - 1); }
     setNutrStreak(ns);
   }, []);
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (lu) => {
+      if (!lu) return;
+      setUser(lu);
+      try {
+        const snap = await getDoc(doc(db, "profiles", lu.uid));
 
+        if (!snap.exists()) {
+          setShowProfile(true);
+          return;
+        }
+
+        const data = snap.data();
+
+        setProfileData(data);
+        setUnit(data.preferredUnit || "kg");
+
+        await loadWeightHistory(lu.uid);
+        await loadNutrHistory(lu.uid);
+
+        try {
+          const wref = doc(db, "profiles", lu.uid, "water", todayKey());
+          const wsnap = await getDoc(wref);
+
+          if (wsnap.exists()) {
+            setWaterCups(wsnap.data().cups || 0);
+          }
+        } catch {}
+
+      } catch (err) {
+        console.error(err);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [loadWeightHistory, loadNutrHistory]);
   /* ── auth ── */
   const handleLogin = async () => {
     setAuthLoading(true);
