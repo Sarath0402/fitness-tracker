@@ -1279,7 +1279,7 @@ export default function App() {
             <div className="grid-4" style={{marginBottom:14}}>
               <div className="card card-accent">
                 <div className="card-label"><span className="card-label-dot" style={{background:"var(--accent)"}} />Current Weight</div>
-                <div style={{display:"flex",alignItems:"baseline",gap:10}}>
+                <div style={{display:"flex",alignItems:"baseline",justifyContent:"center",gap:10}}>
                   <span className="stat-num">{dispWeight}</span>
                   <span className="stat-unit">{unit}</span>
                   {weightTrend && (
