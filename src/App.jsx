@@ -144,6 +144,7 @@ input[type=number]{-moz-appearance:textfield;}
 .col-span-2{grid-column:span 2;}
 @media(max-width:900px){.grid-3{grid-template-columns:1fr 1fr;}.grid-4{grid-template-columns:1fr 1fr;}}
 @media(max-width:600px){.grid-3,.grid-2,.grid-4{grid-template-columns:1fr;}.col-span-2{grid-column:span 1;}}
+@media(max-width:900px){.water-cups{gap:6px;}.water-cup{width:auto;flex:1;}}
 
 /* ── BADGES ── */
 .badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;
@@ -1327,7 +1328,7 @@ export default function App() {
             {/* water + log weight — side by side on desktop, stacked on mobile */}
             <div style={{display:"flex",gap:14,marginBottom:14,alignItems:"stretch",flexWrap:"wrap"}}>
               {/* water */}
-              <div style={{flex:"0 0 68%",minWidth:"280px",width:"100%"}}>
+              <div style={{flex:"0 0 68%",minWidth:"0",width:"100%",boxSizing:"border-box"}}>
                 {user && <WaterTracker uid={user.uid} cups={waterCups} setCups={setWaterCups} goal={profileData.waterGoal || 8} />}
               </div>
               {/* log weight */}
